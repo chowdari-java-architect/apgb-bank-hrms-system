@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bank HRMS Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        form {
+            width: 400px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+        }
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        table {
+            margin-top: 30px;
+            width: 80%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #999;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>🏦 Bank HRMS Employee Dashboard</h2>
+
+<form id="employeeForm">
+    <label>Name:</label>
+    <input type="text" id="name" required>
+
+    <label>Email:</label>
+    <input type="text" id="email" required>
+
+    <label>Phone:</label>
+    <input type="text" id="phone" required>
+
+    <label>Role:</label>
+    <input type="text" id="role" required>
+
+    <label>Joining Date:</label>
+    <input type="date" id="joiningDate" required>
+
+    <button type="submit">Save Employee</button>
+</form>
+
+<h3>Employee List</h3>
+<table id="employeeTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    function loadEmployees() {
+        fetch("/employees")
+            .then(response => response.json())
+            .then(data => {
+                let rows = "";
+                data.forEach(emp => {
+                    rows += `
+                        <tr>
+                            <td>${emp.id}</td>
+                            <td>${emp.name}</td>
+                            <td>${emp.email}</td>
+                            <td>${emp.role}</td>
+                        </tr>`;
+                });
+                document.querySelector("#employeeTable tbody").innerHTML = rows;
+            });
+    }
+
+    document.getElementById("employeeForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        fetch("/employees", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+                role: document.getElementById("role").value,
+                joiningDate: document.getElementById("joiningDate").value
+            })
+        }).then(() => {
+            alert("Employee Saved Successfully");
+            loadEmployees();
+            document.getElementById("employeeForm").reset();
+        });
+    });
+
+    loadEmployees();
+</script>
+
+</body>
+</html>
