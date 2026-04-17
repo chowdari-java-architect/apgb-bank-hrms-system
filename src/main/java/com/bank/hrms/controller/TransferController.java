@@ -1,75 +1,37 @@
 package com.bank.hrms.controller;
 
 import com.bank.hrms.model.TransferRequest;
-import com.bank.hrms.repository.TransferRequestRepository;
+import com.bank.hrms.service.TransferService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import com.bank.hrms.model.Employee;
-import com.bank.hrms.repository.EmployeeRepository;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 @RestController
 @RequestMapping("/transfers")
 @CrossOrigin("*")
 public class TransferController {
 
-    private final TransferRequestRepository repository;
-    private final EmployeeRepository employeeRepository;
+    private final TransferService transferService;
 
-    public TransferController(TransferRequestRepository repository,
-                              EmployeeRepository employeeRepository) {
-        this.repository = repository;
-        this.employeeRepository = employeeRepository;
-       }
+    public TransferController(TransferService transferService) {
+        this.transferService = transferService;
+    }
 
+    // ✅ CREATE TRANSFER (NOW GOES THROUGH SERVICE → AUDIT)
     @PostMapping
     public TransferRequest createRequest(@RequestBody TransferRequest request) {
-        return repository.save(request);
+        return transferService.createTransfer(request);
     }
 
+    // ✅ GET ALL
     @GetMapping
     public List<TransferRequest> getAllRequests() {
-        return repository.findAll();
+        return transferService.getAllTransfers();
     }
 
+    // ✅ APPROVE (NOW AUDIT WILL TRIGGER)
     @PutMapping("/{id}/approve")
     public TransferRequest approveRequest(@PathVariable Long id) {
-        TransferRequest request = repository.findById(id).orElseThrow();
-
-        request.setStatus("APPROVED");
-        repository.save(request);
-
-        employeeRepository.findAll()
-                .stream()
-                .filter(emp -> emp.getName().trim()
-                        .equalsIgnoreCase(request.getEmployeeName().trim()))
-                .findFirst()
-                .ifPresent(emp -> {
-                    emp.setRole(request.getRequestedRole());
-                    employeeRepository.save(emp);
-                });
-
-        return request;
-    }
-    @GetMapping("/export")
-    public void exportTransfers(HttpServletResponse response) throws IOException {
-        response.setContentType("text/csv");
-        response.setHeader("Content-Disposition", "attachment; filename=transfer_report.csv");
-
-        PrintWriter writer = response.getWriter();
-        writer.println("ID,Employee,Current Role,Requested Role,Status");
-
-        for (TransferRequest req : repository.findAll()) {
-            writer.println(req.getId() + "," +
-                    req.getEmployeeName() + "," +
-                    req.getCurrentRole() + "," +
-                    req.getRequestedRole() + "," +
-                    req.getStatus());
-        }
-
-        writer.flush();
+        return transferService.approveTransfer(id);
     }
 }
