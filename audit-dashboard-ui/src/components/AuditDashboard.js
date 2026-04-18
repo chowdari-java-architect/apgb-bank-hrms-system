@@ -15,12 +15,26 @@ function AuditDashboard() {
 
     const fetchDashboardStats = async () => {
         try {
+            // Get JWT token from browser storage
+            const token = localStorage.getItem("token");
+
+            console.log("JWT Token:", token);
+
             const response = await axios.get(
-                "http://localhost:8080/api/dashboard/stats"
+                "http://localhost:8080/api/dashboard/stats",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
             );
+
+            console.log("Dashboard Response:", response.data);
+
             setStats(response.data);
+
         } catch (error) {
-            console.error("Error fetching dashboard stats:", error);
+            console.error("Dashboard Error:", error);
         }
     };
 
@@ -28,13 +42,14 @@ function AuditDashboard() {
         <div style={{ padding: "30px" }}>
             <h2>Audit Tracker Dashboard</h2>
 
-            <div style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
-                gap: "20px",
-                marginTop: "20px"
-            }}>
-
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4, 1fr)",
+                    gap: "20px",
+                    marginTop: "20px"
+                }}
+            >
                 <div style={cardStyle}>
                     <h3>Total Audits</h3>
                     <p>{stats.total}</p>
@@ -54,7 +69,6 @@ function AuditDashboard() {
                     <h3>Overdue Cases</h3>
                     <p>{stats.overdue}</p>
                 </div>
-
             </div>
         </div>
     );
