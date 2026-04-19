@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-function AuditDashboard() {
+function AuditDashboard({ onLogout }) {
     const [stats, setStats] = useState({
         total: 0,
         open: 0,
@@ -15,10 +15,7 @@ function AuditDashboard() {
 
     const fetchDashboardStats = async () => {
         try {
-            // Get JWT token from browser storage
             const token = localStorage.getItem("token");
-
-            console.log("JWT Token:", token);
 
             const response = await axios.get(
                 "http://localhost:8080/api/dashboard/stats",
@@ -29,8 +26,6 @@ function AuditDashboard() {
                 }
             );
 
-            console.log("Dashboard Response:", response.data);
-
             setStats(response.data);
 
         } catch (error) {
@@ -38,18 +33,36 @@ function AuditDashboard() {
         }
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        onLogout();
+    };
+
     return (
         <div style={{ padding: "30px" }}>
-            <h2>Audit Tracker Dashboard</h2>
 
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(4, 1fr)",
-                    gap: "20px",
-                    marginTop: "20px"
-                }}
-            >
+            <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+            }}>
+                <h2>Audit Tracker Dashboard</h2>
+
+                <button
+                    onClick={handleLogout}
+                    style={logoutButtonStyle}
+                >
+                    Logout
+                </button>
+            </div>
+
+            <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: "20px",
+                marginTop: "20px"
+            }}>
+
                 <div style={cardStyle}>
                     <h3>Total Audits</h3>
                     <p>{stats.total}</p>
@@ -69,6 +82,7 @@ function AuditDashboard() {
                     <h3>Overdue Cases</h3>
                     <p>{stats.overdue}</p>
                 </div>
+
             </div>
         </div>
     );
@@ -81,6 +95,15 @@ const cardStyle = {
     textAlign: "center",
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
     backgroundColor: "#f9f9f9"
+};
+
+const logoutButtonStyle = {
+    padding: "10px 20px",
+    backgroundColor: "#d32f2f",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer"
 };
 
 export default AuditDashboard;

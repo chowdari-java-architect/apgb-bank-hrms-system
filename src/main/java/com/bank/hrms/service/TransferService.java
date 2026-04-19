@@ -2,7 +2,6 @@ package com.bank.hrms.service;
 
 import com.bank.hrms.model.TransferRequest;
 import com.bank.hrms.repository.TransferRequestRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,18 +9,22 @@ import java.util.List;
 @Service
 public class TransferService {
 
-    @Autowired
-    private TransferRequestRepository transferRepo;
+    private final TransferRequestRepository transferRepo;
+    private final AuditService auditService;
 
-    @Autowired
-    private AuditService auditService;
+    public TransferService(
+            TransferRequestRepository transferRepo,
+            AuditService auditService
+    ) {
+        this.transferRepo = transferRepo;
+        this.auditService = auditService;
+    }
 
-    // ✅ CREATE TRANSFER REQUEST
+    // CREATE TRANSFER REQUEST
     public TransferRequest createTransfer(TransferRequest request) {
 
         TransferRequest saved = transferRepo.save(request);
 
-        // 🔥 AUDIT LOG - CREATE
         auditService.log(
                 "CREATE",
                 "TRANSFER",
@@ -37,33 +40,33 @@ public class TransferService {
         return saved;
     }
 
-    // ✅ GET ALL TRANSFERS
+    // GET ALL TRANSFERS
     public List<TransferRequest> getAllTransfers() {
         return transferRepo.findAll();
     }
 
-    // ✅ APPROVE TRANSFER
+    // GM FINAL APPROVAL
     public TransferRequest approveTransfer(Long id) {
 
-        TransferRequest old = transferRepo.findById(id).orElseThrow();
+        TransferRequest request = transferRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
-        String oldStatus = old.getStatus();
+        String oldStatus = request.getFinalTransferStatus();
 
-        old.setStatus("APPROVED");
+        request.setFinalTransferStatus("APPROVED");
 
-        TransferRequest updated = transferRepo.save(old);
+        TransferRequest updated = transferRepo.save(request);
 
-        // 🔥 AUDIT LOG - APPROVE
         auditService.log(
                 "APPROVE",
                 "TRANSFER",
                 updated.getId(),
                 updated.getEmployeeName(),
-                "MANAGER",
+                "GM_HR",
                 oldStatus,
                 "APPROVED",
                 "SUCCESS",
-                "Transfer approved"
+                "Final transfer approved by GM"
         );
 
         return updated;

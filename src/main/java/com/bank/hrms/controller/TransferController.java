@@ -17,21 +17,23 @@ public class TransferController {
         this.transferService = transferService;
     }
 
-    // ✅ CREATE TRANSFER (NOW GOES THROUGH SERVICE → AUDIT)
+    // CREATE TRANSFER REQUEST
     @PostMapping
-    public TransferRequest createRequest(@RequestBody TransferRequest request) {
+    public TransferRequest createTransfer(
+            @RequestBody TransferRequest request) {
         return transferService.createTransfer(request);
     }
 
-    // ✅ GET ALL
+    // GET ALL TRANSFERS
     @GetMapping
-    public List<TransferRequest> getAllRequests() {
+    public List<TransferRequest> getAllTransfers() {
         return transferService.getAllTransfers();
     }
 
-    // ✅ APPROVE (NOW AUDIT WILL TRIGGER)
-    @PutMapping("/{id}/approve")
-    public TransferRequest approveRequest(@PathVariable Long id) {
+    // GM FINAL APPROVAL
+    @PutMapping("/approve/{id}")
+    public TransferRequest approveTransfer(
+            @PathVariable Long id) {
         return transferService.approveTransfer(id);
     }
 }

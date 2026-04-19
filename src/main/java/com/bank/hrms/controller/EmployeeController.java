@@ -22,6 +22,26 @@ public class EmployeeController {
         return employeeRepository.save(employee);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteEmployee(@PathVariable Long id) {
+        employeeRepository.deleteById(id);
+    }
+
+    @PutMapping("/{id}")
+    public Employee updateEmployee(
+            @PathVariable Long id,
+            @RequestBody Employee updatedEmployee) {
+
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        employee.setDesignation(updatedEmployee.getDesignation());
+        employee.setBranch(updatedEmployee.getBranch());
+        employee.setScale(updatedEmployee.getScale());
+
+        return employeeRepository.save(employee);
+    }
+
     @GetMapping
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();

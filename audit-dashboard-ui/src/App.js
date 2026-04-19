@@ -1,12 +1,12 @@
 import React from "react";
-import AuditDashboard from "./components/AuditDashboard";
+import CombinedHRMSApp from "./components/CombinedHRMSApp";
 
 function App() {
-  return (
-      <div>
-        <AuditDashboard />
-      </div>
-  );
+    return (
+        <div>
+            <CombinedHRMSApp />
+        </div>
+    );
 }
 
 export default App;

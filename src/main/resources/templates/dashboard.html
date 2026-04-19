@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>APGB HRMS Portal</title>
+</head>
+<body>
+
+<h1>APGB HRMS Portal</h1>
+
+<h2>Transfer Request Form</h2>
+
+<form action="/submit-transfer" method="post">
+
+    <label>Employee Name:</label><br>
+    <input type="text" name="employeeName" /><br><br>
+
+    <label>Current Role:</label><br>
+    <input type="text" name="currentRole" /><br><br>
+
+    <label>Requested Role:</label><br>
+    <input type="text" name="requestedRole" /><br><br>
+
+    <label>Reason:</label><br>
+    <input type="text" name="reason" /><br><br>
+
+    <button type="submit">Submit Transfer Request</button>
+
+</form>
+
+<hr>
+
+<h2>Transfer Requests</h2>
+
+<table border="1">
+
+    <tr>
+        <th>ID</th>
+        <th>Employee</th>
+        <th>Current Role</th>
+        <th>Requested Role</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    <tr th:each="t : ${transfers}">
+        <td th:text="${t.id}"></td>
+        <td th:text="${t.employeeName}"></td>
+        <td th:text="${t.currentRole}"></td>
+        <td th:text="${t.requestedRole}"></td>
+        <td th:text="${t.status}"></td>
+        <td>
+            <a th:href="@{/approve/{id}(id=${t.id})}">
+                Approve
+            </a>
+        </td>
+    </tr>
+
+</table>
+
+</body>
+</html>
