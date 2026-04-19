@@ -22,7 +22,6 @@ public class TransferService {
 
     // CREATE TRANSFER REQUEST
     public TransferRequest createTransfer(TransferRequest request) {
-
         TransferRequest saved = transferRepo.save(request);
 
         auditService.log(
@@ -45,30 +44,62 @@ public class TransferService {
         return transferRepo.findAll();
     }
 
+    // HR VERIFICATION
+    public TransferRequest verifyTransfer(Long id) {
+        TransferRequest request = transferRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transfer request not found"));
+
+        request.setHrVerificationStatus("VERIFIED");
+
+        return transferRepo.save(request);
+    }
+
+    // SENIOR MANAGER APPROVAL
+    public TransferRequest seniorManagerApprove(Long id) {
+        TransferRequest request = transferRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transfer request not found"));
+
+        request.setSeniorManagerApproval("APPROVED");
+
+        return transferRepo.save(request);
+    }
+
+    // AGM APPROVAL
+    public TransferRequest agmApprove(Long id) {
+        TransferRequest request = transferRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transfer request not found"));
+
+        request.setAgmApproval("APPROVED");
+
+        return transferRepo.save(request);
+    }
+
     // GM FINAL APPROVAL
-    public TransferRequest approveTransfer(Long id) {
+    public TransferRequest gmApprove(Long id) {
+        TransferRequest request = transferRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transfer request not found"));
+
+        request.setGmApproval("APPROVED");
+        request.setFinalTransferStatus("APPROVED");
+
+        return transferRepo.save(request);
+    }
+
+    // FINAL TRANSFER ORDER GENERATION
+    public TransferRequest generateTransferOrder(
+            Long id,
+            TransferRequest updatedData) {
 
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
-        String oldStatus = request.getFinalTransferStatus();
+        request.setApprovedRegion(updatedData.getApprovedRegion());
+        request.setApprovedBranch(updatedData.getApprovedBranch());
+        request.setEffectiveTransferDate(updatedData.getEffectiveTransferDate());
+        request.setTransferRemarks(updatedData.getTransferRemarks());
 
-        request.setFinalTransferStatus("APPROVED");
+        request.setOrderGeneratedStatus("GENERATED");
 
-        TransferRequest updated = transferRepo.save(request);
-
-        auditService.log(
-                "APPROVE",
-                "TRANSFER",
-                updated.getId(),
-                updated.getEmployeeName(),
-                "GM_HR",
-                oldStatus,
-                "APPROVED",
-                "SUCCESS",
-                "Final transfer approved by GM"
-        );
-
-        return updated;
+        return transferRepo.save(request);
     }
 }

@@ -61,6 +61,9 @@ public class TransferRequest {
     // Final Posting after approval
     private String approvedBranch;
     private String approvedRegion;
+    private LocalDate effectiveTransferDate;
+    private String transferRemarks;
+    private String orderGeneratedStatus = "PENDING";
 
     // Audit Fields
     private LocalDate requestDate;

@@ -5,6 +5,13 @@ import com.bank.hrms.service.TransferService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.bank.hrms.service.TransferOrderPdfService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.InputStreamResource;
+
+import java.io.ByteArrayInputStream;
 
 @RestController
 @RequestMapping("/transfers")
@@ -12,9 +19,14 @@ import java.util.List;
 public class TransferController {
 
     private final TransferService transferService;
+    private final TransferOrderPdfService pdfService;
 
-    public TransferController(TransferService transferService) {
+    public TransferController(
+            TransferService transferService,
+            TransferOrderPdfService pdfService) {
+
         this.transferService = transferService;
+        this.pdfService = pdfService;
     }
 
     // CREATE TRANSFER REQUEST
@@ -30,10 +42,58 @@ public class TransferController {
         return transferService.getAllTransfers();
     }
 
-    // GM FINAL APPROVAL
-    @PutMapping("/approve/{id}")
-    public TransferRequest approveTransfer(
+    // HR VERIFICATION
+    @PutMapping("/verify/{id}")
+    public TransferRequest verifyTransfer(
             @PathVariable Long id) {
-        return transferService.approveTransfer(id);
+        return transferService.verifyTransfer(id);
+    }
+
+    // SENIOR MANAGER APPROVAL
+    @PutMapping("/senior-manager-approve/{id}")
+    public TransferRequest seniorManagerApprove(
+            @PathVariable Long id) {
+        return transferService.seniorManagerApprove(id);
+    }
+
+    // AGM APPROVAL
+    @PutMapping("/agm-approve/{id}")
+    public TransferRequest agmApprove(
+            @PathVariable Long id) {
+        return transferService.agmApprove(id);
+    }
+
+    // GM FINAL APPROVAL
+    @PutMapping("/gm-approve/{id}")
+    public TransferRequest gmApprove(
+            @PathVariable Long id) {
+        return transferService.gmApprove(id);
+    }
+
+    @PutMapping("/generate-order/{id}")
+    public TransferRequest generateTransferOrder(
+            @PathVariable Long id,
+            @RequestBody TransferRequest updatedData) {
+
+        return transferService.generateTransferOrder(id, updatedData);
+    }
+
+    @GetMapping("/download-order/{id}")
+    public ResponseEntity<InputStreamResource> downloadTransferOrder(
+            @PathVariable Long id) {
+
+        ByteArrayInputStream pdf = pdfService.generateTransferOrderPdf(id);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(
+                "Content-Disposition",
+                "inline; filename=transfer_order_" + id + ".pdf"
+        );
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdf));
     }
 }

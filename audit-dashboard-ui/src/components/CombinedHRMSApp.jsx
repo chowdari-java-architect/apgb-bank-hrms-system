@@ -4,6 +4,8 @@ import EmployeeManagementModule from "./EmployeeManagementModule";
 import EmployeeListModule from "./EmployeeListModule";
 import EmployeeUpdateModule from "./EmployeeUpdateModule";
 import TransferRequestModule from "./TransferRequestModule";
+import TransferApprovalDashboard from "./TransferApprovalDashboard";
+import TransferOrderGenerationModule from "./TransferOrderGenerationModule";
 
 export default function CombinedHRMSApp() {
     const [activePage, setActivePage] = useState("dashboard");
@@ -62,6 +64,20 @@ export default function CombinedHRMSApp() {
                     Transfer Portal
                 </button>
 
+                <button
+                    onClick={() => setActivePage("approval")}
+                    style={buttonStyle}
+                >
+                    HO Transfer Approval
+                </button>
+
+                <button
+                    onClick={() => setActivePage("orderGeneration")}
+                    style={buttonStyle}
+                >
+                    Transfer Order
+                </button>
+
 
             </div>
 
@@ -71,6 +87,8 @@ export default function CombinedHRMSApp() {
             {activePage === "employeeList" && <EmployeeListModule />}
             {activePage === "employeeUpdate" && <EmployeeUpdateModule />}
             {activePage === "transfer" && <TransferRequestModule />}
+            {activePage === "approval" && <TransferApprovalDashboard />}
+            {activePage === "orderGeneration" && <TransferOrderGenerationModule />}
         </div>
     );
 }
