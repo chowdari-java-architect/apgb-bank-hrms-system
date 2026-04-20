@@ -57,6 +57,12 @@ public class TransferRequest {
 
     // UNDER_PROCESS / APPROVED / REJECTED
     private String finalTransferStatus = "UNDER_PROCESS";
+    private String currentApprovalStage = "HR_VERIFICATION";
+
+    private String rejectionReason;
+
+    private String reviewedBy;
+
 
     // Final Posting after approval
     private String approvedBranch;

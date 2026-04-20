@@ -78,6 +78,36 @@ public class TransferController {
         return transferService.generateTransferOrder(id, updatedData);
     }
 
+    // HR → Forward to Senior Manager
+    @PutMapping("/forward-to-sm/{id}")
+    public TransferRequest forwardToSeniorManager(
+            @PathVariable Long id) {
+        return transferService.forwardToSeniorManager(id);
+    }
+
+    // Senior Manager → Forward to AGM
+    @PutMapping("/forward-to-agm/{id}")
+    public TransferRequest forwardToAGM(
+            @PathVariable Long id) {
+        return transferService.forwardToAGM(id);
+    }
+
+    // AGM → Forward to GM
+    @PutMapping("/forward-to-gm/{id}")
+    public TransferRequest forwardToGM(
+            @PathVariable Long id) {
+        return transferService.forwardToGM(id);
+    }
+
+    // Reject Transfer
+    @PutMapping("/reject/{id}")
+    public TransferRequest rejectTransfer(
+            @PathVariable Long id,
+            @RequestParam String reason) {
+
+        return transferService.rejectTransfer(id, reason);
+    }
+
     @GetMapping("/download-order/{id}")
     public ResponseEntity<InputStreamResource> downloadTransferOrder(
             @PathVariable Long id) {

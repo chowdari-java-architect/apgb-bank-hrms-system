@@ -36,8 +36,10 @@ public class EmployeeController {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
         employee.setDesignation(updatedEmployee.getDesignation());
-        employee.setBranch(updatedEmployee.getBranch());
         employee.setScale(updatedEmployee.getScale());
+        employee.setRegion(updatedEmployee.getRegion());
+        employee.setBranch(updatedEmployee.getBranch());
+        employee.setHoDepartment(updatedEmployee.getHoDepartment());
 
         return employeeRepository.save(employee);
     }

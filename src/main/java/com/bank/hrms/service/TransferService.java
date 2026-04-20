@@ -102,4 +102,52 @@ public class TransferService {
 
         return transferRepo.save(request);
     }
+
+    // HR → Forward to Senior Manager
+    public TransferRequest forwardToSeniorManager(Long id) {
+        TransferRequest request = transferRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transfer request not found"));
+
+        request.setHrVerificationStatus("VERIFIED");
+        request.setCurrentApprovalStage("SENIOR_MANAGER");
+        request.setReviewedBy("HR Manager");
+
+        return transferRepo.save(request);
+    }
+
+    // Senior Manager → Forward to AGM
+    public TransferRequest forwardToAGM(Long id) {
+        TransferRequest request = transferRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transfer request not found"));
+
+        request.setSeniorManagerApproval("APPROVED");
+        request.setCurrentApprovalStage("AGM");
+        request.setReviewedBy("Senior Manager HR");
+
+        return transferRepo.save(request);
+    }
+
+    // AGM → Forward to GM
+    public TransferRequest forwardToGM(Long id) {
+        TransferRequest request = transferRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transfer request not found"));
+
+        request.setAgmApproval("APPROVED");
+        request.setCurrentApprovalStage("GM");
+        request.setReviewedBy("AGM HR");
+
+        return transferRepo.save(request);
+    }
+
+    // Final Reject
+    public TransferRequest rejectTransfer(Long id, String reason) {
+        TransferRequest request = transferRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transfer request not found"));
+
+        request.setFinalTransferStatus("REJECTED");
+        request.setCurrentApprovalStage("REJECTED");
+        request.setRejectionReason(reason);
+
+        return transferRepo.save(request);
+    }
 }

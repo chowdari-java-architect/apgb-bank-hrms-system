@@ -3,8 +3,10 @@ import React, { useState } from "react";
 function EmployeeUpdateModule() {
     const [employeeId, setEmployeeId] = useState("");
     const [designation, setDesignation] = useState("");
-    const [branch, setBranch] = useState("");
     const [scale, setScale] = useState("");
+    const [region, setRegion] = useState("");
+    const [branch, setBranch] = useState("");
+    const [hoDepartment, setHoDepartment] = useState("");
 
     const handleUpdate = async () => {
         try {
@@ -15,17 +17,22 @@ function EmployeeUpdateModule() {
                 },
                 body: JSON.stringify({
                     designation,
+                    scale,
+                    region,
                     branch,
-                    scale
+                    hoDepartment
                 })
             });
 
             if (response.ok) {
                 alert("Employee Updated Successfully");
+
                 setEmployeeId("");
                 setDesignation("");
-                setBranch("");
                 setScale("");
+                setRegion("");
+                setBranch("");
+                setHoDepartment("");
             } else {
                 alert("Failed to update employee");
             }
@@ -53,7 +60,13 @@ function EmployeeUpdateModule() {
     };
 
     return (
-        <div style={{ padding: "30px", background: "#f8fafc", minHeight: "100vh" }}>
+        <div
+            style={{
+                padding: "30px",
+                background: "#f8fafc",
+                minHeight: "100vh"
+            }}
+        >
             <h1>Update Employee</h1>
             <p>APGB HRMS Employee Update Module</p>
 
@@ -85,6 +98,22 @@ function EmployeeUpdateModule() {
 
                 <input
                     type="text"
+                    placeholder="New Scale"
+                    value={scale}
+                    onChange={(e) => setScale(e.target.value)}
+                    style={inputStyle}
+                />
+
+                <input
+                    type="text"
+                    placeholder="New Region"
+                    value={region}
+                    onChange={(e) => setRegion(e.target.value)}
+                    style={inputStyle}
+                />
+
+                <input
+                    type="text"
                     placeholder="New Branch"
                     value={branch}
                     onChange={(e) => setBranch(e.target.value)}
@@ -93,9 +122,9 @@ function EmployeeUpdateModule() {
 
                 <input
                     type="text"
-                    placeholder="New Scale"
-                    value={scale}
-                    onChange={(e) => setScale(e.target.value)}
+                    placeholder="HO Department (if applicable)"
+                    value={hoDepartment}
+                    onChange={(e) => setHoDepartment(e.target.value)}
                     style={inputStyle}
                 />
 
