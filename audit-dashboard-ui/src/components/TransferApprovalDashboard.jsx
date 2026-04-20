@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 function TransferApprovalDashboard() {
     const [transfers, setTransfers] = useState([]);
     const [selectedTransfer, setSelectedTransfer] = useState(null);
+    const [vacancyStatus, setVacancyStatus] = useState("");
 
     useEffect(() => {
         fetchTransfers();
@@ -28,12 +29,27 @@ function TransferApprovalDashboard() {
             if (response.ok) {
                 alert(message);
                 fetchTransfers();
+                setSelectedTransfer(null);
             } else {
                 alert("Action Failed");
             }
         } catch (error) {
             console.error(error);
             alert("Server Error");
+        }
+    };
+
+    const checkVacancy = async (region, branch, scale) => {
+        try {
+            const response = await fetch(
+                `http://localhost:8080/vacancies/check?region=${region}&branch=${branch}&scale=${scale}`
+            );
+
+            const result = await response.text();
+            setVacancyStatus(result);
+        } catch (error) {
+            console.error(error);
+            setVacancyStatus("CHECK_FAILED");
         }
     };
 
@@ -56,6 +72,7 @@ function TransferApprovalDashboard() {
             if (response.ok) {
                 alert("Transfer Rejected");
                 fetchTransfers();
+                setSelectedTransfer(null);
             } else {
                 alert("Rejection Failed");
             }
@@ -153,9 +170,17 @@ function TransferApprovalDashboard() {
                             <td>{item.currentApprovalStage}</td>
 
                             <td>{item.finalTransferStatus}</td>
+
                             <td>
                                 <button
-                                    onClick={() => setSelectedTransfer(item)}
+                                    onClick={() => {
+                                        setSelectedTransfer(item);
+                                        checkVacancy(
+                                            item.preference1Region,
+                                            item.preference1Branch,
+                                            item.scale
+                                        );
+                                    }}
                                     style={{
                                         padding: "8px 14px",
                                         background: "#2563eb",
@@ -205,17 +230,32 @@ function TransferApprovalDashboard() {
 
                         <hr />
 
-                        <p><b>Current:</b> {selectedTransfer.currentRegion} - {selectedTransfer.currentBranch}</p>
+                        <p>
+                            <b>Current:</b> {selectedTransfer.currentRegion} -{" "}
+                            {selectedTransfer.currentBranch || selectedTransfer.currentHoDepartment}
+                        </p>
 
                         <hr />
 
-                        <p><b>Preference 1:</b> {selectedTransfer.preference1Region} - {selectedTransfer.preference1Branch}</p>
-                        <p><b>Preference 2:</b> {selectedTransfer.preference2Region} - {selectedTransfer.preference2Branch}</p>
-                        <p><b>Preference 3:</b> {selectedTransfer.preference3Region} - {selectedTransfer.preference3Branch}</p>
+                        <p>
+                            <b>Preference 1:</b> {selectedTransfer.preference1Region} -{" "}
+                            {selectedTransfer.preference1Branch}
+                        </p>
+
+                        <p>
+                            <b>Preference 2:</b> {selectedTransfer.preference2Region} -{" "}
+                            {selectedTransfer.preference2Branch}
+                        </p>
+
+                        <p>
+                            <b>Preference 3:</b> {selectedTransfer.preference3Region} -{" "}
+                            {selectedTransfer.preference3Branch}
+                        </p>
 
                         <hr />
 
                         <p><b>Status:</b> {selectedTransfer.finalTransferStatus}</p>
+                        <p><b>Vacancy Status:</b> {vacancyStatus}</p>
 
                         <br />
 
@@ -303,7 +343,6 @@ function TransferApprovalDashboard() {
                     </div>
                 </div>
             )}
-
         </div>
     );
 }

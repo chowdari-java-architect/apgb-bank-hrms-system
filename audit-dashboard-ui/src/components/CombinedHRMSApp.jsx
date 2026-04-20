@@ -6,6 +6,7 @@ import EmployeeUpdateModule from "./EmployeeUpdateModule";
 import TransferRequestModule from "./TransferRequestModule";
 import TransferApprovalDashboard from "./TransferApprovalDashboard";
 import TransferOrderGenerationModule from "./TransferOrderGenerationModule";
+import VacancyManagementModule from "./VacancyManagementModule";
 
 export default function CombinedHRMSApp() {
     const [activePage, setActivePage] = useState("dashboard");
@@ -78,6 +79,13 @@ export default function CombinedHRMSApp() {
                     Transfer Order
                 </button>
 
+                <button
+                    onClick={() => setActivePage("vacancy")}
+                    style={buttonStyle}
+                >
+                    Vacancy Management
+                </button>
+
 
             </div>
 
@@ -89,6 +97,7 @@ export default function CombinedHRMSApp() {
             {activePage === "transfer" && <TransferRequestModule />}
             {activePage === "approval" && <TransferApprovalDashboard />}
             {activePage === "orderGeneration" && <TransferOrderGenerationModule />}
+            {activePage === "vacancy" && <VacancyManagementModule />}
         </div>
     );
 }

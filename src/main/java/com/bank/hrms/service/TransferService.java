@@ -5,6 +5,7 @@ import com.bank.hrms.repository.TransferRequestRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.time.LocalDate;
 
 @Service
 public class TransferService {
@@ -79,8 +80,46 @@ public class TransferService {
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
-        request.setGmApproval("APPROVED");
-        request.setFinalTransferStatus("APPROVED");
+        String selectedRegion = null;
+        String selectedBranch = null;
+
+        // Preference 1
+        if (request.getPreference1Branch() != null &&
+                !request.getPreference1Branch().isEmpty()) {
+
+            selectedRegion = request.getPreference1Region();
+            selectedBranch = request.getPreference1Branch();
+        }
+
+        // Preference 2
+        else if (request.getPreference2Branch() != null &&
+                !request.getPreference2Branch().isEmpty()) {
+
+            selectedRegion = request.getPreference2Region();
+            selectedBranch = request.getPreference2Branch();
+        }
+
+        // Preference 3
+        else if (request.getPreference3Branch() != null &&
+                !request.getPreference3Branch().isEmpty()) {
+
+            selectedRegion = request.getPreference3Region();
+            selectedBranch = request.getPreference3Branch();
+        }
+
+        if (selectedBranch != null) {
+            request.setApprovedRegion(selectedRegion);
+            request.setApprovedBranch(selectedBranch);
+
+            request.setApprovalGround(request.getPriorityType());
+            request.setEffectiveDate(LocalDate.now().plusDays(7));
+
+            request.setGmApproval("APPROVED");
+            request.setFinalTransferStatus("APPROVED");
+            request.setCurrentApprovalStage("COMPLETED");
+        } else {
+            request.setFinalTransferStatus("PENDING_NO_VACANCY");
+        }
 
         return transferRepo.save(request);
     }
