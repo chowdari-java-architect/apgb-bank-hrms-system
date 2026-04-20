@@ -39,17 +39,55 @@ function TransferApprovalDashboard() {
         }
     };
 
-    const checkVacancy = async (region, branch, scale) => {
+    const checkVacancy = async (item) => {
         try {
-            const response = await fetch(
-                `http://localhost:8080/vacancies/check?region=${region}&branch=${branch}&scale=${scale}`
+            // Preference 1
+            let response = await fetch(
+                `http://localhost:8080/vacancies/check?region=${item.preference1Region}&branch=${item.preference1Branch}&scale=${item.scale}`
             );
 
-            const result = await response.text();
-            setVacancyStatus(result);
+            let result = await response.text();
+
+            if (result === "VACANCY_AVAILABLE") {
+                setVacancyStatus(
+                    `Preference 1 Selected → ${item.preference1Region} - ${item.preference1Branch} ✅`
+                );
+                return;
+            }
+
+            // Preference 2
+            response = await fetch(
+                `http://localhost:8080/vacancies/check?region=${item.preference2Region}&branch=${item.preference2Branch}&scale=${item.scale}`
+            );
+
+            result = await response.text();
+
+            if (result === "VACANCY_AVAILABLE") {
+                setVacancyStatus(
+                    `Preference 2 Selected → ${item.preference2Region} - ${item.preference2Branch} ✅`
+                );
+                return;
+            }
+
+            // Preference 3
+            response = await fetch(
+                `http://localhost:8080/vacancies/check?region=${item.preference3Region}&branch=${item.preference3Branch}&scale=${item.scale}`
+            );
+
+            result = await response.text();
+
+            if (result === "VACANCY_AVAILABLE") {
+                setVacancyStatus(
+                    `Preference 3 Selected → ${item.preference3Region} - ${item.preference3Branch} ✅`
+                );
+                return;
+            }
+
+            setVacancyStatus("No Vacancy Available in All 3 Preferences ❌");
+
         } catch (error) {
             console.error(error);
-            setVacancyStatus("CHECK_FAILED");
+            setVacancyStatus("Vacancy Check Failed");
         }
     };
 
@@ -175,11 +213,7 @@ function TransferApprovalDashboard() {
                                 <button
                                     onClick={() => {
                                         setSelectedTransfer(item);
-                                        checkVacancy(
-                                            item.preference1Region,
-                                            item.preference1Branch,
-                                            item.scale
-                                        );
+                                        checkVacancy(item);
                                     }}
                                     style={{
                                         padding: "8px 14px",

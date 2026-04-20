@@ -32,7 +32,25 @@ function TransferOrderGenerationModule() {
         borderRadius: "8px"
     };
 
+    const handlePrint = () => {
+        window.print();
+    };
+
+    const printStyle = `
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        margin: 0;
+        padding: 20px;
+    }
+}
+`;
+
     return (
+
         <div style={{ padding: "30px", background: "#f8fafc", minHeight: "100vh" }}>
             <h1>Transfer Order Generation</h1>
             <p>Auto Generated Final Transfer Orders</p>
@@ -136,6 +154,44 @@ function TransferOrderGenerationModule() {
                         <strong>
                             General Manager<br />
                             -Sd-
+
+                            <br /><br />
+
+                            <button
+                                onClick={handlePrint}
+                                style={{
+                                    padding: "10px 20px",
+                                    background: "#2563eb",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    cursor: "pointer",
+                                    marginRight: "10px"
+                                }}
+                            >
+                                Print Order
+                            </button>
+
+                            <button
+                                onClick={() => window.print()}
+                                style={{
+                                    padding: "10px 20px",
+                                    background: "#16a34a",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                Download PDF
+                            </button>
+
+                            <button
+                                className="no-print"
+                                onClick={handlePrint}
+                            >
+                                Print Order
+                            </button>
                         </strong>
                     </p>
                 </div>
