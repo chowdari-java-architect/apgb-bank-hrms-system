@@ -2,20 +2,25 @@ package com.bank.hrms.service;
 
 import com.bank.hrms.model.TransferRequest;
 import com.bank.hrms.repository.TransferRequestRepository;
-import com.itextpdf.text.*;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.BaseFont;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.time.format.DateTimeFormatter;
 
 @Service
 public class TransferOrderPdfService {
 
     private final TransferRequestRepository transferRepo;
 
-    public TransferOrderPdfService(TransferRequestRepository transferRepo) {
+    public TransferOrderPdfService(
+            TransferRequestRepository transferRepo
+    ) {
         this.transferRepo = transferRepo;
     }
 
@@ -24,108 +29,153 @@ public class TransferOrderPdfService {
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
-        Document document = new Document(PageSize.A4);
+        Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            Font titleFont = new Font(Font.FontFamily.TIMES_ROMAN, 16, Font.BOLD);
-            Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL);
-            Font boldFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
+            Font titleFont = new Font(
+                    BaseFont.createFont(),
+                    14,
+                    Font.BOLD
+            );
 
-            // Title
-            Paragraph title = new Paragraph(
-                    "ANDHRA PRADESH GRAMEENA BANK\nHEAD OFFICE - GUNTUR\nTRANSFER ORDER",
+            Font normalFont = new Font(
+                    BaseFont.createFont(),
+                    11,
+                    Font.NORMAL
+            );
+
+            Paragraph bankTitle = new Paragraph(
+                    "ANDHRA PRADESH GRAMEENA BANK",
                     titleFont
             );
-            title.setAlignment(Element.ALIGN_CENTER);
-            title.setSpacingAfter(20);
-            document.add(title);
+            bankTitle.setAlignment(Element.ALIGN_CENTER);
+            document.add(bankTitle);
 
-            // Date (Right Side)
-            String todayDate = java.time.LocalDate.now()
-                    .format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-
-            Paragraph date = new Paragraph("Date: " + todayDate, normalFont);
-            date.setAlignment(Element.ALIGN_RIGHT);
-            date.setSpacingAfter(20);
-            document.add(date);
-
-            // To Section
-            document.add(new Paragraph(
-                    "To,\n" +
-                            request.getEmployeeName() + "\n" +
-                            request.getDesignation() + "\n" +
-                            request.getCurrentBranch() + "\n" +
-                            request.getCurrentRegion(),
+            Paragraph office = new Paragraph(
+                    "Head Office, Guntur, Andhra Pradesh",
                     normalFont
-            ));
-
-            document.add(new Paragraph(" "));
-            document.add(new Paragraph("Dear Sir,", normalFont));
-            document.add(new Paragraph(" "));
-
-            // Subject
-            Paragraph subject = new Paragraph(
-                    "Sub: Transfer Order - Reg.",
-                    boldFont
             );
-            subject.setSpacingAfter(10);
-            document.add(subject);
+            office.setAlignment(Element.ALIGN_CENTER);
+            document.add(office);
 
-            // Reference
-            String referenceText =
-                    "With reference to your transfer application bearing Request ID No. "
-                            + request.getId()
-                            + ", submitted for transfer request under "
-                            + request.getPriorityType()
-                            + " category, the competent authority has considered your request.";
+            Paragraph dept = new Paragraph(
+                    "HR Department - Transfer Order Section",
+                    normalFont
+            );
+            dept.setAlignment(Element.ALIGN_CENTER);
+            document.add(dept);
 
-            document.add(new Paragraph(referenceText, normalFont));
             document.add(new Paragraph(" "));
-
-            // Main body
-            String bodyText =
-                    "You are hereby informed that your transfer request has been approved. "
-                            + "You are posted to "
-                            + request.getApprovedBranch()
-                            + ", under "
-                            + request.getApprovedRegion()
-                            + ", with effect from "
-                            + (request.getEffectiveTransferDate() != null
-                            ? request.getEffectiveTransferDate().toString()
-                            : "immediate effect")
-                            + ".";
-
-            document.add(new Paragraph(bodyText, normalFont));
-            document.add(new Paragraph(" "));
-
-            String remarksText =
-                    "Remarks: "
-                            + (request.getTransferRemarks() != null
-                            ? request.getTransferRemarks()
-                            : "As per administrative requirements.");
-
-            document.add(new Paragraph(remarksText, normalFont));
-            document.add(new Paragraph(" "));
+            document.add(new Paragraph(
+                    "Ref No: APGB/HRD/TRF/" + request.getId() + "/2026",
+                    normalFont
+            ));
 
             document.add(new Paragraph(
-                    "You are advised to hand over charge and report to the new place of posting immediately.",
+                    "Date: " + request.getEffectiveDate(),
                     normalFont
             ));
 
             document.add(new Paragraph(" "));
-            document.add(new Paragraph("Yours faithfully,", normalFont));
+
+            document.add(new Paragraph(
+                    "To,\nSri/Smt. " + request.getEmployeeName()
+                            + "\n" + request.getDesignation()
+                            + "\n" + request.getCurrentBranch(),
+                    normalFont
+            ));
+
             document.add(new Paragraph(" "));
-            document.add(new Paragraph("General Manager", boldFont));
-            document.add(new Paragraph("-sd/-", normalFont));
+
+            document.add(new Paragraph(
+                    "Sub: Transfer Order - Posting Instructions",
+                    normalFont
+            ));
+
+            document.add(new Paragraph(" "));
+
+            document.add(new Paragraph(
+                    "Dear Sir/Madam,",
+                    normalFont
+            ));
+
+            document.add(new Paragraph(" "));
+
+            document.add(new Paragraph(
+                    "With reference to your transfer request submitted on "
+                            + request.getApprovalGround()
+                            + " grounds, your request has been considered and approved.",
+                    normalFont
+            ));
+
+            document.add(new Paragraph(" "));
+
+            document.add(new Paragraph(
+                    "You are hereby transferred from:",
+                    normalFont
+            ));
+
+            document.add(new Paragraph(
+                    request.getCurrentRegion()
+                            + " -> "
+                            + request.getCurrentBranch(),
+                    normalFont
+            ));
+
+            document.add(new Paragraph(" "));
+
+            document.add(new Paragraph(
+                    "To:",
+                    normalFont
+            ));
+
+            document.add(new Paragraph(
+                    request.getApprovedRegion()
+                            + " -> "
+                            + request.getApprovedBranch(),
+                    normalFont
+            ));
+
+            document.add(new Paragraph(" "));
+
+            document.add(new Paragraph(
+                    "Effective Date: " + request.getEffectiveDate(),
+                    normalFont
+            ));
+
+            document.add(new Paragraph(" "));
+
+            document.add(new Paragraph(
+                    "You are advised to report to the new place of posting immediately.",
+                    normalFont
+            ));
+
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph(
+                    "Yours Faithfully,",
+                    normalFont
+            ));
+
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph(
+                    "General Manager",
+                    normalFont
+            ));
+
+            document.add(new Paragraph(
+                    "-Sd-",
+                    normalFont
+            ));
 
             document.close();
 
         } catch (Exception e) {
-            throw new RuntimeException("Error generating PDF", e);
+            throw new RuntimeException("Error while generating PDF", e);
         }
 
         return new ByteArrayInputStream(out.toByteArray());

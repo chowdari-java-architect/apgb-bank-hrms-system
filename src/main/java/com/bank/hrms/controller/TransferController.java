@@ -1,17 +1,16 @@
 package com.bank.hrms.controller;
 
 import com.bank.hrms.model.TransferRequest;
-import com.bank.hrms.service.TransferService;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import com.bank.hrms.service.TransferOrderPdfService;
+import com.bank.hrms.service.TransferService;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 
 @RestController
 @RequestMapping("/transfers")
@@ -23,8 +22,8 @@ public class TransferController {
 
     public TransferController(
             TransferService transferService,
-            TransferOrderPdfService pdfService) {
-
+            TransferOrderPdfService pdfService
+    ) {
         this.transferService = transferService;
         this.pdfService = pdfService;
     }
@@ -32,7 +31,8 @@ public class TransferController {
     // CREATE TRANSFER REQUEST
     @PostMapping
     public TransferRequest createTransfer(
-            @RequestBody TransferRequest request) {
+            @RequestBody TransferRequest request
+    ) {
         return transferService.createTransfer(request);
     }
 
@@ -45,74 +45,84 @@ public class TransferController {
     // HR VERIFICATION
     @PutMapping("/verify/{id}")
     public TransferRequest verifyTransfer(
-            @PathVariable Long id) {
+            @PathVariable Long id
+    ) {
         return transferService.verifyTransfer(id);
     }
 
     // SENIOR MANAGER APPROVAL
     @PutMapping("/senior-manager-approve/{id}")
     public TransferRequest seniorManagerApprove(
-            @PathVariable Long id) {
+            @PathVariable Long id
+    ) {
         return transferService.seniorManagerApprove(id);
     }
 
     // AGM APPROVAL
     @PutMapping("/agm-approve/{id}")
     public TransferRequest agmApprove(
-            @PathVariable Long id) {
+            @PathVariable Long id
+    ) {
         return transferService.agmApprove(id);
     }
 
     // GM FINAL APPROVAL
     @PutMapping("/gm-approve/{id}")
     public TransferRequest gmApprove(
-            @PathVariable Long id) {
+            @PathVariable Long id
+    ) {
         return transferService.gmApprove(id);
     }
 
+    // FINAL TRANSFER ORDER GENERATION
     @PutMapping("/generate-order/{id}")
     public TransferRequest generateTransferOrder(
             @PathVariable Long id,
-            @RequestBody TransferRequest updatedData) {
-
+            @RequestBody TransferRequest updatedData
+    ) {
         return transferService.generateTransferOrder(id, updatedData);
     }
 
     // HR → Forward to Senior Manager
     @PutMapping("/forward-to-sm/{id}")
     public TransferRequest forwardToSeniorManager(
-            @PathVariable Long id) {
+            @PathVariable Long id
+    ) {
         return transferService.forwardToSeniorManager(id);
     }
 
     // Senior Manager → Forward to AGM
     @PutMapping("/forward-to-agm/{id}")
     public TransferRequest forwardToAGM(
-            @PathVariable Long id) {
+            @PathVariable Long id
+    ) {
         return transferService.forwardToAGM(id);
     }
 
     // AGM → Forward to GM
     @PutMapping("/forward-to-gm/{id}")
     public TransferRequest forwardToGM(
-            @PathVariable Long id) {
+            @PathVariable Long id
+    ) {
         return transferService.forwardToGM(id);
     }
 
-    // Reject Transfer
+    // FINAL REJECT
     @PutMapping("/reject/{id}")
     public TransferRequest rejectTransfer(
             @PathVariable Long id,
-            @RequestParam String reason) {
-
+            @RequestParam String reason
+    ) {
         return transferService.rejectTransfer(id, reason);
     }
 
+    // DOWNLOAD TRANSFER ORDER PDF
     @GetMapping("/download-order/{id}")
     public ResponseEntity<InputStreamResource> downloadTransferOrder(
-            @PathVariable Long id) {
-
-        ByteArrayInputStream pdf = pdfService.generateTransferOrderPdf(id);
+            @PathVariable Long id
+    ) {
+        ByteArrayInputStream pdf =
+                pdfService.generateTransferOrderPdf(id);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(

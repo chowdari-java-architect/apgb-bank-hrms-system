@@ -74,6 +74,7 @@ function TransferOrderGenerationModule() {
             </select>
 
             {selectedTransfer && (
+
                 <div
                     style={{
                         background: "white",
@@ -83,6 +84,21 @@ function TransferOrderGenerationModule() {
                         boxShadow: "0 2px 10px rgba(0,0,0,0.08)"
                     }}
                 >
+                    <div style={{ textAlign: "center", marginBottom: "20px" }}>
+                        <h2 style={{ margin: 0 }}>
+                            ANDHRA PRADESH GRAMEENA BANK
+                        </h2>
+
+                        <p style={{ margin: "5px 0" }}>
+                            Head Office, Guntur, Andhra Pradesh
+                        </p>
+
+                        <p style={{ margin: "5px 0" }}>
+                            HR Department – Transfer Order Section
+                        </p>
+
+                        <hr />
+                    </div>
                     <div style={{ textAlign: "right" }}>
                         Date: {selectedTransfer.effectiveDate}
                     </div>
@@ -99,12 +115,11 @@ function TransferOrderGenerationModule() {
                     <br />
 
                     <p>
-                        <strong>Sub:</strong> Transfer Order
+                        <strong>Sub:</strong> Transfer Order – Posting Instructions
                     </p>
 
                     <p>
-                        <strong>Ref:</strong> Your Transfer Request Application No. TRF-{selectedTransfer.id}
-                    </p>
+                        <strong>Ref No:</strong> APGB/HRD/TRF/{selectedTransfer.id}/2026                    </p>
 
                     <br />
 
