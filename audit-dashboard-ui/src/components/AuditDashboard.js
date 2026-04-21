@@ -1,109 +1,103 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import ProfessionalHRMSDashboard from "./ProfessionalHRMSDashboard";
+import EmployeeManagementModule from "./EmployeeManagementModule";
+import EmployeeListModule from "./EmployeeListModule";
+import EmployeeUpdateModule from "./EmployeeUpdateModule";
+import TransferRequestModule from "./TransferRequestModule";
+import TransferApprovalDashboard from "./TransferApprovalDashboard";
+import TransferOrderGenerationModule from "./TransferOrderGenerationModule";
+import VacancyManagementModule from "./VacancyManagementModule";
 
-function AuditDashboard({ onLogout }) {
-    const [stats, setStats] = useState({
-        total: 0,
-        open: 0,
-        closed: 0,
-        overdue: 0
-    });
+export default function CombinedHRMSApp() {
+    const [activePage, setActivePage] = useState("dashboard");
 
-    useEffect(() => {
-        fetchDashboardStats();
-    }, []);
-
-    const fetchDashboardStats = async () => {
-        try {
-            const token = localStorage.getItem("token");
-
-            const response = await axios.get(
-                "http://localhost:8080/api/dashboard/stats",
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            );
-
-            setStats(response.data);
-
-        } catch (error) {
-            console.error("Dashboard Error:", error);
-        }
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem("token");
-        onLogout();
+    const buttonStyle = {
+        padding: "10px 18px",
+        background: "#2563eb",
+        color: "white",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer"
     };
 
     return (
-        <div style={{ padding: "30px" }}>
-
-            <div style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center"
-            }}>
-                <h2>Audit Tracker Dashboard</h2>
+        <div>
+            {/* Top Navigation */}
+            <div
+                style={{
+                    display: "flex",
+                    gap: "15px",
+                    padding: "20px",
+                    background: "#0f172a"
+                }}
+            >
+                <button
+                    onClick={() => setActivePage("dashboard")}
+                    style={buttonStyle}
+                >
+                    Dashboard
+                </button>
 
                 <button
-                    onClick={handleLogout}
-                    style={logoutButtonStyle}
+                    onClick={() => setActivePage("employee")}
+                    style={buttonStyle}
                 >
-                    Logout
+                    Employee Management
                 </button>
+
+                <button
+                    onClick={() => setActivePage("employeeList")}
+                    style={buttonStyle}
+                >
+                    Employee List
+                </button>
+
+                <button
+                    onClick={() => setActivePage("employeeUpdate")}
+                    style={buttonStyle}
+                >
+                    Employee Update
+                </button>
+                <button
+                    onClick={() => setActivePage("transfer")}
+                    style={buttonStyle}
+                >
+                    Transfer Portal
+                </button>
+
+                <button
+                    onClick={() => setActivePage("approval")}
+                    style={buttonStyle}
+                >
+                    HO Transfer Approval
+                </button>
+
+                <button
+                    onClick={() => setActivePage("orderGeneration")}
+                    style={buttonStyle}
+                >
+                    Transfer Order
+                </button>
+
+                <button
+                    onClick={() => setActivePage("vacancy")}
+                    style={buttonStyle}
+                >
+                    Vacancy Management
+                </button>
+
+
             </div>
 
-            <div style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(4, 1fr)",
-                gap: "20px",
-                marginTop: "20px"
-            }}>
-
-                <div style={cardStyle}>
-                    <h3>Total Audits</h3>
-                    <p>{stats.total}</p>
-                </div>
-
-                <div style={cardStyle}>
-                    <h3>Open Cases</h3>
-                    <p>{stats.open}</p>
-                </div>
-
-                <div style={cardStyle}>
-                    <h3>Closed Cases</h3>
-                    <p>{stats.closed}</p>
-                </div>
-
-                <div style={cardStyle}>
-                    <h3>Overdue Cases</h3>
-                    <p>{stats.overdue}</p>
-                </div>
-
-            </div>
+            {/* Page Switch */}
+            {activePage === "dashboard" && <ProfessionalHRMSDashboard />}
+            {activePage === "employee" && <EmployeeManagementModule />}
+            {activePage === "employeeList" && <EmployeeListModule />}
+            {activePage === "employeeUpdate" && <EmployeeUpdateModule />}
+            {activePage === "transfer" && <TransferRequestModule />}
+            {activePage === "approval" && <TransferApprovalDashboard />}
+            {activePage === "orderGeneration" && <TransferOrderGenerationModule />}
+            {activePage === "vacancy" && <VacancyManagementModule />}
         </div>
     );
 }
-
-const cardStyle = {
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    padding: "20px",
-    textAlign: "center",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-    backgroundColor: "#f9f9f9"
-};
-
-const logoutButtonStyle = {
-    padding: "10px 20px",
-    backgroundColor: "#d32f2f",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer"
-};
-
-export default AuditDashboard;

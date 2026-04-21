@@ -10,7 +10,7 @@ function TransferOrderGenerationModule() {
 
     const fetchApprovedTransfers = async () => {
         try {
-            const response = await fetch("http://localhost:8080/transfers");
+            const response = await fetch("http://3.6.88.154:8080/transfers");
             const data = await response.json();
 
             const approvedOnly = data.filter(
@@ -50,7 +50,6 @@ function TransferOrderGenerationModule() {
 `;
 
     return (
-
         <div style={{ padding: "30px", background: "#f8fafc", minHeight: "100vh" }}>
             <h1>Transfer Order Generation</h1>
             <p>Auto Generated Final Transfer Orders</p>
@@ -74,7 +73,6 @@ function TransferOrderGenerationModule() {
             </select>
 
             {selectedTransfer && (
-
                 <div
                     style={{
                         background: "white",
@@ -99,6 +97,7 @@ function TransferOrderGenerationModule() {
 
                         <hr />
                     </div>
+
                     <div style={{ textAlign: "right" }}>
                         Date: {selectedTransfer.effectiveDate}
                     </div>
@@ -119,7 +118,8 @@ function TransferOrderGenerationModule() {
                     </p>
 
                     <p>
-                        <strong>Ref No:</strong> APGB/HRD/TRF/{selectedTransfer.id}/2026                    </p>
+                        <strong>Ref No:</strong> APGB/HRD/TRF/{selectedTransfer.id}/2026
+                    </p>
 
                     <br />
 
@@ -131,9 +131,7 @@ function TransferOrderGenerationModule() {
                         your request has been considered and approved.
                     </p>
 
-                    <p>
-                        You are hereby transferred from:
-                    </p>
+                    <p>You are hereby transferred from:</p>
 
                     <p>
                         <strong>
@@ -141,9 +139,7 @@ function TransferOrderGenerationModule() {
                         </strong>
                     </p>
 
-                    <p>
-                        to
-                    </p>
+                    <p>to</p>
 
                     <p>
                         <strong>
@@ -161,54 +157,47 @@ function TransferOrderGenerationModule() {
 
                     <br /><br />
 
-                    <p>
-                        Yours Faithfully,
-                    </p>
+                    <p>Yours Faithfully,</p>
 
                     <p>
                         <strong>
                             General Manager<br />
                             -Sd-
-
-                            <br /><br />
-
-                            <button
-                                onClick={handlePrint}
-                                style={{
-                                    padding: "10px 20px",
-                                    background: "#2563eb",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "8px",
-                                    cursor: "pointer",
-                                    marginRight: "10px"
-                                }}
-                            >
-                                Print Order
-                            </button>
-
-                            <button
-                                onClick={() => window.print()}
-                                style={{
-                                    padding: "10px 20px",
-                                    background: "#16a34a",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "8px",
-                                    cursor: "pointer"
-                                }}
-                            >
-                                Download PDF
-                            </button>
-
-                            <button
-                                className="no-print"
-                                onClick={handlePrint}
-                            >
-                                Print Order
-                            </button>
                         </strong>
                     </p>
+
+                    <br /><br />
+
+                    <button
+                        className="no-print"
+                        onClick={handlePrint}
+                        style={{
+                            padding: "10px 20px",
+                            background: "#2563eb",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                            marginRight: "10px"
+                        }}
+                    >
+                        Print Order
+                    </button>
+
+                    <button
+                        className="no-print"
+                        onClick={() => window.print()}
+                        style={{
+                            padding: "10px 20px",
+                            background: "#16a34a",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "8px",
+                            cursor: "pointer"
+                        }}
+                    >
+                        Download PDF
+                    </button>
                 </div>
             )}
         </div>

@@ -10,7 +10,7 @@ function EmployeeUpdateModule() {
 
     const handleUpdate = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/employees/${employeeId}`, {
+            const response = await fetch(`http://3.6.88.154:8080/employees/${employeeId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"

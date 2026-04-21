@@ -10,7 +10,7 @@ function EmployeeListModule() {
 
     const fetchEmployees = async () => {
         try {
-            const response = await fetch("http://localhost:8080/employees");
+            const response = await fetch("http://3.6.88.154:8080/employees");
             const data = await response.json();
             setEmployees(data);
         } catch (error) {
@@ -21,7 +21,7 @@ function EmployeeListModule() {
 
     const deleteEmployee = async (id) => {
         try {
-            await fetch(`http://localhost:8080/employees/${id}`, {
+            await fetch(`http://3.6.88.154:8080/employees/${id}`, {
                 method: "DELETE"
             });
 

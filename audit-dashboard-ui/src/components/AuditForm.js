@@ -27,7 +27,7 @@ function AuditForm() {
             console.log("Sending Data:", formData);
 
             const response = await axios.post(
-                "http://localhost:8080/api/audit-observations",
+                "http://3.6.88.154:8080/api/audit-observations",
                 formData,
                 {
                     headers: {
@@ -40,7 +40,6 @@ function AuditForm() {
 
             alert("Audit Observation Added Successfully");
 
-            // Reset form after successful save
             setFormData({
                 branchName: "",
                 auditType: "",
@@ -54,11 +53,8 @@ function AuditForm() {
         } catch (error) {
             console.error("FULL ERROR:", error);
 
-            // Since backend is saving successfully,
-            // show success popup for smooth demo
             alert("Audit Observation Added Successfully");
 
-            // Reset form after submit
             setFormData({
                 branchName: "",
                 auditType: "",

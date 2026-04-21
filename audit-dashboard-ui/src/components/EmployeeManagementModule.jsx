@@ -52,7 +52,7 @@ function EmployeeManagementModule() {
 
     const handleSubmit = async () => {
         try {
-            const response = await fetch("http://localhost:8080/employees", {
+            const response = await fetch("http://3.6.88.154:8080/employees", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
