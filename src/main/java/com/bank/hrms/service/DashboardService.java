@@ -1,44 +1,48 @@
 package com.bank.hrms.service;
 
-import com.bank.hrms.model.AuditObservation;
-import com.bank.hrms.repository.AuditObservationRepository;
+import com.bank.hrms.repository.EmployeeRepository;
+import com.bank.hrms.repository.TransferRequestRepository;
+import com.bank.hrms.repository.VacancyMasterRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class DashboardService {
 
-    private final AuditObservationRepository repo;
+    private final EmployeeRepository employeeRepository;
+    private final TransferRequestRepository transferRepository;
+    private final VacancyMasterRepository vacancyRepository;
 
-    public DashboardService(AuditObservationRepository repo) {
-        this.repo = repo;
+    public DashboardService(
+            EmployeeRepository employeeRepository,
+            TransferRequestRepository transferRepository,
+            VacancyMasterRepository vacancyRepository
+    ) {
+        this.employeeRepository = employeeRepository;
+        this.transferRepository = transferRepository;
+        this.vacancyRepository = vacancyRepository;
     }
 
-    public Map<String, Long> getStats() {
-        Map<String, Long> stats = new HashMap<>();
+    public Long getTotalEmployees() {
+        return employeeRepository.count();
+    }
 
-        // Total observations
-        long total = repo.count();
+    public Long getPendingTransfers() {
+        return transferRepository.countByFinalTransferStatus("UNDER_PROCESS");
+    }
 
-        // Open observations
-        long open = repo.findByStatus(AuditObservation.Status.OPEN).size();
+    public Long getApprovedTransfers() {
+        return transferRepository.countByFinalTransferStatus("APPROVED");
+    }
 
-        // Closed observations
-        long closed = repo.findByStatus(AuditObservation.Status.CLOSED).size();
+    public Long getRejectedTransfers() {
+        return transferRepository.countByFinalTransferStatus("REJECTED");
+    }
 
-        // Overdue observations
-        long overdue = repo.findAll()
-                .stream()
-                .filter(AuditObservation::isOverdue)
-                .count();
+    public Long getTotalVacancies() {
+        return vacancyRepository.count();
+    }
 
-        stats.put("total", total);
-        stats.put("open", open);
-        stats.put("closed", closed);
-        stats.put("overdue", overdue);
-
-        return stats;
+    public Long getGeneratedOrders() {
+        return transferRepository.countByOrderGeneratedStatus("GENERATED");
     }
 }

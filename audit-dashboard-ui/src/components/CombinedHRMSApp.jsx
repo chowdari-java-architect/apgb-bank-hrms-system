@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ProfessionalHRMSDashboard from "./ProfessionalHRMSDashboard";
+import DashboardCards from "./DashboardCards";
 import EmployeeManagementModule from "./EmployeeManagementModule";
 import EmployeeListModule from "./EmployeeListModule";
 import EmployeeUpdateModule from "./EmployeeUpdateModule";
@@ -90,7 +90,7 @@ export default function CombinedHRMSApp() {
             </div>
 
             {/* Page Switch */}
-            {activePage === "dashboard" && <ProfessionalHRMSDashboard />}
+            {activePage === "dashboard" &&  <DashboardCards />}
             {activePage === "employee" && <EmployeeManagementModule />}
             {activePage === "employeeList" && <EmployeeListModule />}
             {activePage === "employeeUpdate" && <EmployeeUpdateModule />}
