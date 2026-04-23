@@ -4,8 +4,8 @@ import com.bank.hrms.model.TransferRequest;
 import com.bank.hrms.repository.TransferRequestRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class TransferService {
@@ -23,6 +23,16 @@ public class TransferService {
 
     // CREATE TRANSFER REQUEST
     public TransferRequest createTransfer(TransferRequest request) {
+
+        request.setHrVerificationStatus("PENDING");
+        request.setSeniorManagerApproval("PENDING");
+        request.setAgmApproval("PENDING");
+        request.setGmApproval("PENDING");
+
+        request.setCurrentApprovalStage("HR_VERIFICATION");
+        request.setFinalTransferStatus("UNDER_PROCESS");
+        request.setOrderGeneratedStatus("PENDING");
+
         TransferRequest saved = transferRepo.save(request);
 
         auditService.log(
@@ -45,12 +55,20 @@ public class TransferService {
         return transferRepo.findAll();
     }
 
+    // GET BY ID
+    public TransferRequest getTransferById(Long id) {
+        return transferRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transfer request not found"));
+    }
+
     // HR VERIFICATION
     public TransferRequest verifyTransfer(Long id) {
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
         request.setHrVerificationStatus("VERIFIED");
+        request.setCurrentApprovalStage("SENIOR_MANAGER");
+        request.setReviewedBy("HR Manager");
 
         return transferRepo.save(request);
     }
@@ -61,6 +79,8 @@ public class TransferService {
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
         request.setSeniorManagerApproval("APPROVED");
+        request.setCurrentApprovalStage("AGM");
+        request.setReviewedBy("Senior Manager HR");
 
         return transferRepo.save(request);
     }
@@ -71,6 +91,8 @@ public class TransferService {
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
         request.setAgmApproval("APPROVED");
+        request.setCurrentApprovalStage("GM");
+        request.setReviewedBy("AGM HR");
 
         return transferRepo.save(request);
     }
@@ -108,6 +130,7 @@ public class TransferService {
         }
 
         if (selectedBranch != null) {
+
             request.setApprovedRegion(selectedRegion);
             request.setApprovedBranch(selectedBranch);
 
@@ -117,8 +140,12 @@ public class TransferService {
             request.setGmApproval("APPROVED");
             request.setFinalTransferStatus("APPROVED");
             request.setCurrentApprovalStage("COMPLETED");
+            request.setReviewedBy("GM HR");
+
         } else {
+
             request.setFinalTransferStatus("PENDING_NO_VACANCY");
+            request.setCurrentApprovalStage("GM_PENDING");
         }
 
         return transferRepo.save(request);
@@ -127,8 +154,8 @@ public class TransferService {
     // FINAL TRANSFER ORDER GENERATION
     public TransferRequest generateTransferOrder(
             Long id,
-            TransferRequest updatedData) {
-
+            TransferRequest updatedData
+    ) {
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
@@ -178,7 +205,7 @@ public class TransferService {
         return transferRepo.save(request);
     }
 
-    // Final Reject
+    // FINAL REJECT
     public TransferRequest rejectTransfer(Long id, String reason) {
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));

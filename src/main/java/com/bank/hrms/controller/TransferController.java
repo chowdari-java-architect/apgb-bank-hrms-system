@@ -107,6 +107,39 @@ public class TransferController {
         return transferService.forwardToGM(id);
     }
 
+    // COMMON APPROVE API (Auto Route by Stage)
+    @PutMapping("/approve/{id}")
+    public TransferRequest approveTransfer(
+            @PathVariable Long id
+    ) {
+        TransferRequest request =
+                transferService.getTransferById(id);
+
+        if (request == null) {
+            throw new RuntimeException("Transfer not found");
+        }
+
+        String stage = request.getCurrentApprovalStage();
+
+        if ("HR_VERIFICATION".equals(stage)) {
+            return transferService.forwardToSeniorManager(id);
+        }
+
+        if ("SENIOR_MANAGER".equals(stage)) {
+            return transferService.forwardToAGM(id);
+        }
+
+        if ("AGM".equals(stage)) {
+            return transferService.forwardToGM(id);
+        }
+
+        if ("GM".equals(stage)) {
+            return transferService.gmApprove(id);
+        }
+
+        return request;
+    }
+
     // FINAL REJECT
     @PutMapping("/reject/{id}")
     public TransferRequest rejectTransfer(
@@ -127,7 +160,7 @@ public class TransferController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(
                 "Content-Disposition",
-                "inline; filename=transfer_order_" + id + ".pdf"
+                "attachment; filename=transfer_order_" + id + ".pdf"
         );
 
         return ResponseEntity

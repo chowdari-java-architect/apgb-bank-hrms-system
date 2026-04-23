@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 
 function VacancyManagementModule() {
@@ -148,8 +149,120 @@ function VacancyManagementModule() {
     };
 
     return (
-        <div>
-            {/* UI remains same */}
+        <div style={{ padding: "30px", background: "#f8fafc", minHeight: "100vh" }}>
+            <h2>Vacancy Management Module</h2>
+
+            <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "15px",
+                marginBottom: "20px"
+            }}>
+
+                <select
+                    name="region"
+                    value={formData.region}
+                    onChange={handleChange}
+                >
+                    <option value="">Select Region</option>
+                    {regionOptions.map((item) => (
+                        <option key={item} value={item}>
+                            {item}
+                        </option>
+                    ))}
+                </select>
+
+                <select
+                    name="branchOrDepartment"
+                    value={formData.branchOrDepartment}
+                    onChange={handleChange}
+                >
+                    <option value="">Select Branch / Department</option>
+                    {(branchOptions[formData.region] || []).map((item) => (
+                        <option key={item} value={item}>
+                            {item}
+                        </option>
+                    ))}
+                </select>
+
+                <select
+                    name="designation"
+                    value={formData.designation}
+                    onChange={handleChange}
+                >
+                    <option value="">Select Designation</option>
+                    {designationOptions.map((item) => (
+                        <option key={item} value={item}>
+                            {item}
+                        </option>
+                    ))}
+                </select>
+
+                <select
+                    name="scale"
+                    value={formData.scale}
+                    onChange={handleChange}
+                >
+                    <option value="">Select Scale</option>
+                    {scaleOptions.map((item) => (
+                        <option key={item} value={item}>
+                            {item}
+                        </option>
+                    ))}
+                </select>
+
+                <input
+                    type="number"
+                    name="sanctionedStrength"
+                    placeholder="Sanctioned Strength"
+                    value={formData.sanctionedStrength}
+                    onChange={handleChange}
+                />
+
+                <input
+                    type="number"
+                    name="workingStrength"
+                    placeholder="Working Strength"
+                    value={formData.workingStrength}
+                    onChange={handleChange}
+                />
+            </div>
+
+            <button onClick={handleSubmit}>
+                Save Vacancy
+            </button>
+
+            <hr style={{ margin: "30px 0" }} />
+
+            <h3>Vacancy List</h3>
+
+            <table border="1" cellPadding="10" style={{ width: "100%" }}>
+                <thead>
+                <tr>
+                    <th>Region</th>
+                    <th>Branch</th>
+                    <th>Designation</th>
+                    <th>Scale</th>
+                    <th>Sanctioned</th>
+                    <th>Working</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {vacancies.map((item) => (
+                    <tr key={item.id}>
+                        <td>{item.region}</td>
+                        <td>{item.branchOrDepartment}</td>
+                        <td>{item.designation}</td>
+                        <td>{item.scale}</td>
+                        <td>{item.sanctionedStrength}</td>
+                        <td>{item.workingStrength}</td>
+                        <td>{item.vacancyStatus}</td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
         </div>
     );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 
 function TransferOrderGenerationModule() {
@@ -34,6 +35,12 @@ function TransferOrderGenerationModule() {
 
     const handlePrint = () => {
         window.print();
+    };
+    const downloadOrder = (id) => {
+        window.open(
+            `http://3.6.88.154:8080/transfers/download-order/${id}`,
+            "_blank"
+        );
     };
 
     const printStyle = `
@@ -168,36 +175,37 @@ function TransferOrderGenerationModule() {
 
                     <br /><br />
 
-                    <button
-                        className="no-print"
-                        onClick={handlePrint}
-                        style={{
-                            padding: "10px 20px",
-                            background: "#2563eb",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "8px",
-                            cursor: "pointer",
-                            marginRight: "10px"
-                        }}
-                    >
-                        Print Order
-                    </button>
+                    <div className="no-print" style={{ marginTop: "30px" }}>
+                        <button
+                            onClick={() => downloadOrder(selectedTransfer.id)}
+                            style={{
+                                padding: "12px 20px",
+                                background: "#2563eb",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "8px",
+                                cursor: "pointer",
+                                marginRight: "10px"
+                            }}
+                        >
+                            Download Transfer Order PDF
+                        </button>
 
-                    <button
-                        className="no-print"
-                        onClick={() => window.print()}
-                        style={{
-                            padding: "10px 20px",
-                            background: "#16a34a",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "8px",
-                            cursor: "pointer"
-                        }}
-                    >
-                        Download PDF
-                    </button>
+                        <button
+                            onClick={handlePrint}
+                            style={{
+                                padding: "12px 20px",
+                                background: "#16a34a",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "8px",
+                                cursor: "pointer"
+                            }}
+                        >
+                            Print Order
+                        </button>
+                    </div>
+
                 </div>
             )}
         </div>
