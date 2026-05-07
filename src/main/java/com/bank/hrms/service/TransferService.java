@@ -21,6 +21,14 @@ public class TransferService {
         this.auditService = auditService;
     }
 
+    private void validateRole(String loggedInRole, String requiredRole) {
+        if (!requiredRole.equalsIgnoreCase(loggedInRole)) {
+            throw new RuntimeException(
+                    "Access Denied: Only " + requiredRole + " can perform this action"
+            );
+        }
+    }
+
     // CREATE TRANSFER REQUEST
     public TransferRequest createTransfer(TransferRequest request) {
 
@@ -62,7 +70,8 @@ public class TransferService {
     }
 
     // HR VERIFICATION
-    public TransferRequest verifyTransfer(Long id) {
+    public TransferRequest verifyTransfer(Long id, String role) {
+        validateRole(role, "HR");
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
@@ -74,7 +83,8 @@ public class TransferService {
     }
 
     // SENIOR MANAGER APPROVAL
-    public TransferRequest seniorManagerApprove(Long id) {
+    public TransferRequest seniorManagerApprove(Long id, String role) {
+        validateRole(role, "SM_HR");
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
@@ -86,7 +96,8 @@ public class TransferService {
     }
 
     // AGM APPROVAL
-    public TransferRequest agmApprove(Long id) {
+    public TransferRequest agmApprove(Long id, String role) {
+        validateRole(role, "AGM_HR");
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
@@ -98,14 +109,16 @@ public class TransferService {
     }
 
     // GM FINAL APPROVAL
-    public TransferRequest gmApprove(Long id) {
+
+    public TransferRequest gmApprove(Long id, String role) {
+        validateRole(role, "GM_HR");
+
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
         String selectedRegion = null;
         String selectedBranch = null;
 
-        // Preference 1
         if (request.getPreference1Branch() != null &&
                 !request.getPreference1Branch().isEmpty()) {
 
@@ -113,7 +126,6 @@ public class TransferService {
             selectedBranch = request.getPreference1Branch();
         }
 
-        // Preference 2
         else if (request.getPreference2Branch() != null &&
                 !request.getPreference2Branch().isEmpty()) {
 
@@ -121,7 +133,6 @@ public class TransferService {
             selectedBranch = request.getPreference2Branch();
         }
 
-        // Preference 3
         else if (request.getPreference3Branch() != null &&
                 !request.getPreference3Branch().isEmpty()) {
 
@@ -135,6 +146,9 @@ public class TransferService {
             request.setApprovedBranch(selectedBranch);
 
             request.setApprovalGround(request.getPriorityType());
+
+            request.setApprovedDate(LocalDate.now()); // NEW
+
             request.setEffectiveDate(LocalDate.now().plusDays(7));
 
             request.setGmApproval("APPROVED");
@@ -152,6 +166,7 @@ public class TransferService {
     }
 
     // FINAL TRANSFER ORDER GENERATION
+
     public TransferRequest generateTransferOrder(
             Long id,
             TransferRequest updatedData
@@ -159,9 +174,7 @@ public class TransferService {
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
-        request.setApprovedRegion(updatedData.getApprovedRegion());
-        request.setApprovedBranch(updatedData.getApprovedBranch());
-        request.setEffectiveTransferDate(updatedData.getEffectiveTransferDate());
+        // Only optional manual remarks if needed
         request.setTransferRemarks(updatedData.getTransferRemarks());
 
         request.setOrderGeneratedStatus("GENERATED");
@@ -170,7 +183,10 @@ public class TransferService {
     }
 
     // HR → Forward to Senior Manager
-    public TransferRequest forwardToSeniorManager(Long id) {
+    public TransferRequest forwardToSeniorManager(Long id, String role)
+    {
+        validateRole(role, "HR");
+
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
@@ -182,7 +198,10 @@ public class TransferService {
     }
 
     // Senior Manager → Forward to AGM
-    public TransferRequest forwardToAGM(Long id) {
+    public TransferRequest forwardToAGM(Long id, String role)
+    {
+        validateRole(role, "SM_HR");
+
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 
@@ -194,7 +213,8 @@ public class TransferService {
     }
 
     // AGM → Forward to GM
-    public TransferRequest forwardToGM(Long id) {
+    public TransferRequest forwardToGM(Long id, String role) {
+        validateRole(role, "AGM_HR");
         TransferRequest request = transferRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transfer request not found"));
 

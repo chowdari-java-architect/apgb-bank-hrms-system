@@ -18,11 +18,17 @@ function DashboardCards() {
 
     const fetchDashboardSummary = async () => {
         try {
-            const response = await axios.get(
-                "http://3.6.88.154:8080/dashboard/summary"
-            );
+            const response = await
+                axios.get("/api/dashboard/summary")
 
-            setSummary(response.data);
+            setSummary({
+                                       totalEmployees: response.data.totalEmployees,
+                                       pendingTransfers: response.data.pendingTransfers,
+                                       approvedTransfers: response.data.approvedTransfers,
+                                       rejectedTransfers: response.data.rejectedTransfers,
+                                       totalVacancies: response.data.vacancies,
+                                       generatedOrders: response.data.ordersGenerated
+                                   });
         } catch (error) {
             console.error("Dashboard fetch error:", error);
         }

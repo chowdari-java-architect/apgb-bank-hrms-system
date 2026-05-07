@@ -8,24 +8,30 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.bank.hrms.model.User;
+import com.bank.hrms.repository.UserRepository;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @RestController
-@RequestMapping("/transfers")
+@RequestMapping("/api/transfers")
+
 @CrossOrigin("*")
 public class TransferController {
 
     private final TransferService transferService;
     private final TransferOrderPdfService pdfService;
+    private final UserRepository userRepository;
 
     public TransferController(
             TransferService transferService,
-            TransferOrderPdfService pdfService
+            TransferOrderPdfService pdfService,
+            UserRepository userRepository
     ) {
         this.transferService = transferService;
         this.pdfService = pdfService;
+        this.userRepository = userRepository;
     }
 
     // CREATE TRANSFER REQUEST
@@ -45,33 +51,36 @@ public class TransferController {
     // HR VERIFICATION
     @PutMapping("/verify/{id}")
     public TransferRequest verifyTransfer(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @RequestParam String role
     ) {
-        return transferService.verifyTransfer(id);
+        return transferService.verifyTransfer(id, role);
     }
 
     // SENIOR MANAGER APPROVAL
     @PutMapping("/senior-manager-approve/{id}")
     public TransferRequest seniorManagerApprove(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @RequestParam String role
     ) {
-        return transferService.seniorManagerApprove(id);
+        return transferService.seniorManagerApprove(id, role);
     }
 
     // AGM APPROVAL
     @PutMapping("/agm-approve/{id}")
     public TransferRequest agmApprove(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @RequestParam String role
     ) {
-        return transferService.agmApprove(id);
+        return transferService.agmApprove(id, role);
     }
-
     // GM FINAL APPROVAL
     @PutMapping("/gm-approve/{id}")
     public TransferRequest gmApprove(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @RequestParam String role
     ) {
-        return transferService.gmApprove(id);
+        return transferService.gmApprove(id, role);
     }
 
     // FINAL TRANSFER ORDER GENERATION
@@ -86,32 +95,38 @@ public class TransferController {
     // HR → Forward to Senior Manager
     @PutMapping("/forward-to-sm/{id}")
     public TransferRequest forwardToSeniorManager(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @RequestParam String role
     ) {
-        return transferService.forwardToSeniorManager(id);
+        return transferService.forwardToSeniorManager(id, role);
     }
 
     // Senior Manager → Forward to AGM
     @PutMapping("/forward-to-agm/{id}")
     public TransferRequest forwardToAGM(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @RequestParam String role
     ) {
-        return transferService.forwardToAGM(id);
+        return transferService.forwardToAGM(id, role);
     }
 
     // AGM → Forward to GM
     @PutMapping("/forward-to-gm/{id}")
     public TransferRequest forwardToGM(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @RequestParam String role
     ) {
-        return transferService.forwardToGM(id);
+        return transferService.forwardToGM(id, role);
     }
 
     // COMMON APPROVE API (Auto Route by Stage)
     @PutMapping("/approve/{id}")
     public TransferRequest approveTransfer(
-            @PathVariable Long id
-    ) {
+            @PathVariable Long id,
+            @RequestParam String role
+
+    )
+    {
         TransferRequest request =
                 transferService.getTransferById(id);
 
@@ -122,19 +137,16 @@ public class TransferController {
         String stage = request.getCurrentApprovalStage();
 
         if ("HR_VERIFICATION".equals(stage)) {
-            return transferService.forwardToSeniorManager(id);
-        }
+            return transferService.forwardToSeniorManager(id, role);        }
 
         if ("SENIOR_MANAGER".equals(stage)) {
-            return transferService.forwardToAGM(id);
-        }
+            return transferService.forwardToAGM(id, role);        }
 
         if ("AGM".equals(stage)) {
-            return transferService.forwardToGM(id);
-        }
+            return transferService.forwardToGM(id, role);        }
 
         if ("GM".equals(stage)) {
-            return transferService.gmApprove(id);
+            return transferService.gmApprove(id, role);
         }
 
         return request;

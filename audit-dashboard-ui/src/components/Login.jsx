@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Login from "./components/Login";
 
 function Login({ onLogin }) {
     const [username, setUsername] = useState("");
@@ -9,7 +8,7 @@ function Login({ onLogin }) {
     const handleLogin = async () => {
         try {
             const response = await axios.post(
-                "http://3.6.88.154:8080/api/auth/login",
+                "/api/auth/login",
                 {
                     username: username,
                     password: password
@@ -17,13 +16,15 @@ function Login({ onLogin }) {
             );
 
             // Save JWT token
-            localStorage.setItem("token", response.data);
-
-            alert("Login Successful");
-
-            // Move to dashboard
-            onLogin();
-
+            localStorage.setItem("token", response.data.token);
+            localStorage.setItem("username", response.data.username);
+            localStorage.setItem("role", response.data.role);
+            if (response.data.token) {
+                alert("Login Successful");
+                onLogin();
+            } else {
+                alert("Invalid Username or Password");
+            }
         } catch (error) {
             alert("Invalid Username or Password");
             console.error(error);
@@ -39,7 +40,7 @@ function Login({ onLogin }) {
             borderRadius: "10px",
             boxShadow: "0 2px 10px rgba(0,0,0,0.1)"
         }}>
-            <h2 style={{ textAlign: "center" }}>Audit Tracker Login</h2>
+            <h2 style={{ textAlign: "center" }}>APGB HRMS</h2>
 
             <input
                 type="text"

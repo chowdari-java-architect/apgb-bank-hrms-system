@@ -8,8 +8,9 @@ import TransferApprovalDashboard from "./TransferApprovalDashboard";
 import TransferOrderGenerationModule from "./TransferOrderGenerationModule";
 import VacancyManagementModule from "./VacancyManagementModule";
 
-export default function CombinedHRMSApp() {
+export default function CombinedHRMSApp({ onLogout }) {
     const [activePage, setActivePage] = useState("dashboard");
+    const role = localStorage.getItem("role");
 
     const buttonStyle = {
         padding: "10px 18px",
@@ -38,12 +39,14 @@ export default function CombinedHRMSApp() {
                     Dashboard
                 </button>
 
-                <button
-                    onClick={() => setActivePage("employee")}
-                    style={buttonStyle}
-                >
-                    Employee Management
-                </button>
+                {(role === "HR" || role === "SM_HR" || role === "AGM_HR" || role === "GM_HR" || role === "ADMIN") && (
+                    <button
+                        onClick={() => setActivePage("employee")}
+                        style={buttonStyle}
+                    >
+                        Employee Management
+                    </button>
+                )}
 
                 <button
                     onClick={() => setActivePage("employeeList")}
@@ -84,6 +87,19 @@ export default function CombinedHRMSApp() {
                     style={buttonStyle}
                 >
                     Vacancy Management
+                </button>
+                <button
+                    onClick={onLogout}
+                    style={{
+                        padding: "10px 18px",
+                        background: "#dc2626",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "8px",
+                        cursor: "pointer"
+                    }}
+                >
+                    Logout
                 </button>
 
 

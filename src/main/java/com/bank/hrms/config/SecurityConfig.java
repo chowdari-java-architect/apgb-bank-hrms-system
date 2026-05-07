@@ -9,19 +9,19 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        System.out.println("🔥 SECURITY CONFIG LOADED 🔥");
 
         http
                 .csrf(csrf -> csrf.disable())
-
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
                 )
-
-                .formLogin(form -> form.disable())
-
-                .httpBasic(httpBasic -> httpBasic.disable());
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(form -> form.disable());
 
         return http.build();
     }
+
 }

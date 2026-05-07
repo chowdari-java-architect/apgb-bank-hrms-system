@@ -5,27 +5,45 @@ function TransferApprovalDashboard() {
     const [transfers, setTransfers] = useState([]);
     const [selectedTransfer, setSelectedTransfer] = useState(null);
     const [vacancyStatus, setVacancyStatus] = useState("");
+    const role = localStorage.getItem("role");
 
     useEffect(() => {
         fetchTransfers();
     }, []);
 
+
     const fetchTransfers = async () => {
         try {
-            const response = await fetch("http://3.6.88.154:8080/transfers");
-            const data = await response.json();
+            const response = await fetch("/api/transfers");
+
+            // 🔴 DEBUG START
+            const text = await response.text();
+            console.log("RAW RESPONSE:", text);
+            // 🔴 DEBUG END
+
+            const data = JSON.parse(text);
             setTransfers(data);
+
         } catch (error) {
-            console.error(error);
+            console.error("ERROR:", error);
             alert("Failed to load transfer requests");
         }
     };
 
-    const updateStatus = async (url, message) => {
+    const updateStatus = async (baseUrl, message, role) => {
         try {
-            const response = await fetch(url, {
-                method: "PUT"
+            const finalUrl = `${baseUrl}?role=${role}`;
+
+            console.log("Calling URL:", finalUrl);
+
+            const response = await fetch(finalUrl, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                }
             });
+
+            const result = await response.text();
 
             if (response.ok) {
                 alert(message);
@@ -33,13 +51,17 @@ function TransferApprovalDashboard() {
                 setSelectedTransfer(null);
                 setVacancyStatus("");
             } else {
-                alert("Action Failed");
+                alert("Action Failed: " + result);
             }
+
         } catch (error) {
             console.error(error);
             alert("Server Error");
         }
     };
+
+
+
 
     const rejectTransfer = async (id) => {
         const reason = prompt("Enter rejection reason:");
@@ -51,7 +73,7 @@ function TransferApprovalDashboard() {
 
         try {
             const response = await fetch(
-                `http://3.6.88.154:8080/transfers/reject/${id}?reason=${encodeURIComponent(reason)}`,
+                `/api/transfers/reject/${id}?reason=${encodeURIComponent(reason)}`,
                 {
                     method: "PUT"
                 }
@@ -73,7 +95,7 @@ function TransferApprovalDashboard() {
     const checkVacancy = async (item) => {
         try {
             let response = await fetch(
-                `http://3.6.88.154:8080/vacancies/check?region=${item.preference1Region}&branch=${item.preference1Branch}&scale=${item.scale}`
+                `/api/vacancies/check?region=${item.preference1Region}&branch=${item.preference1Branch}&scale=${item.scale}`
             );
 
             let result = await response.text();
@@ -86,7 +108,7 @@ function TransferApprovalDashboard() {
             }
 
             response = await fetch(
-                `http://3.6.88.154:8080/vacancies/check?region=${item.preference2Region}&branch=${item.preference2Branch}&scale=${item.scale}`
+                `/api/vacancies/check?region=${item.preference2Region}&branch=${item.preference2Branch}&scale=${item.scale}`
             );
 
             result = await response.text();
@@ -99,7 +121,7 @@ function TransferApprovalDashboard() {
             }
 
             response = await fetch(
-                `http://3.6.88.154:8080/vacancies/check?region=${item.preference3Region}&branch=${item.preference3Branch}&scale=${item.scale}`
+                `/api/vacancies/check?region=${item.preference3Region}&branch=${item.preference3Branch}&scale=${item.scale}`
             );
 
             result = await response.text();
@@ -208,45 +230,56 @@ function TransferApprovalDashboard() {
                     <hr />
 
                     {/* HR */}
-                    {selectedTransfer.currentApprovalStage === "HR_VERIFICATION" && (
-                        <>
-                            <button
-                                onClick={() =>
-                                    updateStatus(
-                                        `http://3.6.88.154:8080/transfers/forward-to-sm/${selectedTransfer.id}`,
-                                        "Forwarded to Senior Manager"
-                                    )
-                                }
-                            >
-                                Forward to SM
-                            </button>
-                        </>
-                    )}
+
+                    {role === "HR" &&
+                        selectedTransfer.currentApprovalStage === "HR_VERIFICATION" && (
+                            <>
+
+                                <button
+                                    onClick={() =>
+                                        updateStatus(
+                                            `/api/transfers/forward-to-sm/${selectedTransfer.id}`,
+                                            "Forwarded to Senior Manager",
+                                            "HR"
+                                        )
+                                    }
+                                >
+                                    Forward to SM
+                                </button>
+
+
+                            </>
+                        )}
+
 
                     {/* Senior Manager */}
-                    {selectedTransfer.currentApprovalStage === "SENIOR_MANAGER" && (
-                        <>
-                            <button
-                                onClick={() =>
-                                    updateStatus(
-                                        `http://3.6.88.154:8080/transfers/forward-to-agm/${selectedTransfer.id}`,
-                                        "Forwarded to AGM"
-                                    )
-                                }
-                            >
-                                Forward to AGM
-                            </button>
-                        </>
-                    )}
+                    {role === "SM_HR" &&
+                        selectedTransfer.currentApprovalStage === "SENIOR_MANAGER" && (
+                            <>
+                                <button
+                                    onClick={() =>
+                                        updateStatus(
+                                            `/api/transfers/forward-to-agm/${selectedTransfer.id}`,
+                                            "Forwarded to AGM",
+                                            "SM_HR"
+                                        )
+                                    }
+                                >
+                                    Forward to AGM
+                                </button>
+                            </>
+                        )}
 
                     {/* AGM */}
-                    {selectedTransfer.currentApprovalStage === "AGM" && (
-                        <>
+                    {role === "AGM_HR" &&
+                        selectedTransfer.currentApprovalStage === "AGM" && (                        <>
                             <button
                                 onClick={() =>
+
                                     updateStatus(
-                                        `http://3.6.88.154:8080/transfers/forward-to-gm/${selectedTransfer.id}`,
-                                        "Forwarded to GM"
+                                        `/api/transfers/forward-to-gm/${selectedTransfer.id}`,
+                                        "Forwarded to GM",
+                                        "AGM_HR"
                                     )
                                 }
                             >
@@ -256,8 +289,8 @@ function TransferApprovalDashboard() {
                     )}
 
                     {/* GM */}
-                    {selectedTransfer.currentApprovalStage === "GM" && (
-                        <>
+                    {role === "GM_HR" &&
+                        selectedTransfer.currentApprovalStage === "GM" && (                        <>
                             <button
                                 onClick={() => checkVacancy(selectedTransfer)}
                             >
@@ -266,11 +299,13 @@ function TransferApprovalDashboard() {
 
                             <button
                                 onClick={() =>
+
                                     updateStatus(
-                                        `http://3.6.88.154:8080/transfers/gm-approve/${selectedTransfer.id}`,
-                                        "Final Transfer Approved"
+                                        `/api/transfers/gm-approve/${selectedTransfer.id}`,
+                                        "Final Transfer Approved",
+                                        "GM_HR"
                                     )
-                                }
+                                     }
                                 style={{ marginLeft: "10px" }}
                             >
                                 Final Approve

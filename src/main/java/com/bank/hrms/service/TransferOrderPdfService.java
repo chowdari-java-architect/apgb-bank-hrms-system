@@ -76,7 +76,7 @@ public class TransferOrderPdfService {
             ));
 
             document.add(new Paragraph(
-                    "Date: " + request.getEffectiveDate(),
+                    "Date: " + request.getApprovedDate(),
                     normalFont
             ));
 

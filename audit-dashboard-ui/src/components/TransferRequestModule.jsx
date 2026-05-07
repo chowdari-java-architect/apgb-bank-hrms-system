@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+    import React, { useState } from "react";
 
 function TransferRequestModule() {
+    const role = localStorage.getItem("role");
     const regionOptions = [
         "Head Office",
         "Srikakulam RO",
@@ -99,7 +100,7 @@ function TransferRequestModule() {
 
     const handleSubmit = async () => {
         try {
-            const response = await fetch("http://3.6.88.154:8080/transfers", {
+            const response = await fetch("/api/transfers", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -304,22 +305,24 @@ function TransferRequestModule() {
                     style={inputStyle}
                 />
 
-                <button
-                    onClick={handleSubmit}
-                    style={{
-                        width: "100%",
-                        padding: "14px",
-                        background: "#2563eb",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "8px",
-                        fontWeight: "bold",
-                        cursor: "pointer"
-                    }}
-                >
-                    Submit Transfer Request
-                </button>
 
+                    {role === "EMPLOYEE" && (
+                        <button
+                            onClick={handleSubmit}
+                            style={{
+                                width: "100%",
+                                padding: "14px",
+                                background: "#2563eb",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "8px",
+                                fontWeight: "bold",
+                                cursor: "pointer"
+                            }}
+                        >
+                            Submit Transfer Request
+                        </button>
+                    )}
             </div>
         </div>
     );

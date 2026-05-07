@@ -11,7 +11,7 @@ function TransferOrderGenerationModule() {
 
     const fetchApprovedTransfers = async () => {
         try {
-            const response = await fetch("http://3.6.88.154:8080/transfers");
+            const response = await fetch("/api/transfers");
             const data = await response.json();
 
             const approvedOnly = data.filter(
@@ -38,7 +38,7 @@ function TransferOrderGenerationModule() {
     };
     const downloadOrder = (id) => {
         window.open(
-            `http://3.6.88.154:8080/transfers/download-order/${id}`,
+            `/api/transfers/download-order/${id}`,
             "_blank"
         );
     };
@@ -106,7 +106,7 @@ function TransferOrderGenerationModule() {
                     </div>
 
                     <div style={{ textAlign: "right" }}>
-                        Date: {selectedTransfer.effectiveDate}
+                        Date: {selectedTransfer.approvedDate}
                     </div>
 
                     <br />

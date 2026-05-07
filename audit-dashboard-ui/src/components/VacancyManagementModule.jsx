@@ -91,7 +91,7 @@ function VacancyManagementModule() {
 
     const fetchVacancies = async () => {
         try {
-            const response = await fetch("http://3.6.88.154:8080/vacancies");
+            const response = await fetch("/api/vacancies");
             const data = await response.json();
             setVacancies(data);
         } catch (error) {
@@ -118,7 +118,7 @@ function VacancyManagementModule() {
 
     const handleSubmit = async () => {
         try {
-            const response = await fetch("http://3.6.88.154:8080/vacancies", {
+            const response = await fetch("/api/vacancies", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

@@ -29,6 +29,7 @@ public class TransferRequest {
     private String reasonForTransfer;
     private String approvalGround;
     private LocalDate effectiveDate;
+    private LocalDate approvedDate;
 
     // MEDICAL / SPOUSE / ADMINISTRATIVE / GENERAL
     private String priorityType;
